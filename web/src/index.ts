@@ -142,7 +142,7 @@ function startAutoTrack(history: History) {
       };
     };
 
-    const handlePush = (state: any, title: string, url: string) => {
+    const handlePush = (_state: any, _title: string, url: string) => {
       if (!url) return;
       currentRef = currentUrl;
       currentUrl = parseURL(url.toString());
