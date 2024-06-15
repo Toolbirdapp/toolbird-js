@@ -21,6 +21,7 @@ type EventData = {
 type ToolbirdClient = {
   track: (event?: string, data?: EventData) => void;
   init: (options: ToolbirdOptions) => void;
+  pageview: () => void;
   setTrackingEnabled: (enabled: boolean) => void;
 };
 
@@ -166,6 +167,7 @@ function setTrackingEnabled(enabled: boolean) {
 const toolbird: ToolbirdClient = {
   init: init,
   track: track,
+  pageview: () => track('pageview'),
   setTrackingEnabled: setTrackingEnabled,
 };
 
