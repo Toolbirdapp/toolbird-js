@@ -30,11 +30,23 @@ type ToolbirdClient = {
   track: (event?: string, data?: EventData) => void;
   init: (options: ToolbirdOptions) => void;
   identify: (userId: string, data?: IdentityData) => void;
+
+  /**
+   * Track a pageview event
+   * @returns void
+   */
   pageview: () => void;
   setTrackingEnabled: (enabled: boolean) => void;
+
+  /**
+   * Reset the current user identity
+   * @returns void
+   */
+  reset: () => void;
 };
 
 let initialized = false;
+let identified = false;
 const isBrowser = typeof window !== 'undefined';
 let config: ToolbirdConfig | null = null;
 
@@ -76,6 +88,7 @@ function getStandardPayload() {
 function identify(userId: string, data?: IdentityData) {
   if (!isBrowser || !initialized || !config) return;
   if (config?.trackingEnabled === false) return;
+  if (identified) return;
 
   async function send() {
     try {
@@ -93,6 +106,7 @@ function identify(userId: string, data?: IdentityData) {
   }
 
   send();
+  identified = true;
 }
 
 function track(event?: string, data?: EventData) {
@@ -120,6 +134,10 @@ async function sendEvent(payload: any) {
       },
     });
   } catch {}
+}
+
+function reset() {
+  identified = false;
 }
 
 function init(options: ToolbirdOptions) {
@@ -201,6 +219,7 @@ const toolbird: ToolbirdClient = {
   identify: identify,
   pageview: () => track('pageview'),
   setTrackingEnabled: setTrackingEnabled,
+  reset: reset,
 };
 
 export default toolbird;
