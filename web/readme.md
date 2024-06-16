@@ -36,7 +36,7 @@ API
 | prop   | required | default                            | options | description                                                                      |
 | :----- | :------: | :--------------------------------- | :------ | -------------------------------------------------------------------------------- |
 | `domain` | ✓ | | String | The domain of your website, that you have from the Toolbird Dashboard
-| `host` |          | https://api.toolbird.io/v1/event | String  | Usefull for setting another host if proxing the tracking though your own domain. |
+| `host` |          | https://api.toolbird.io/v1 | String  | Usefull for setting another host if proxing the tracking though your own domain. |
 | `autoTrack` | | `true` | `true` or `false` | Disable auto tracking - this will disable pageviews automatically being tracked.
 
 ### `track(event: string, data: EventData)`
