@@ -18,9 +18,18 @@ type EventData = {
   [key: string]: string | number | boolean | Date;
 };
 
+type IdentityData = {
+  [key: string]: string | number | boolean | Date;
+} & {
+  email?: string;
+  name?: string;
+  avatar?: string;
+};
+
 type ToolbirdClient = {
   track: (event?: string, data?: EventData) => void;
   init: (options: ToolbirdOptions) => void;
+  identify: (userId: string, data?: IdentityData) => void;
   pageview: () => void;
   setTrackingEnabled: (enabled: boolean) => void;
 };
@@ -64,24 +73,46 @@ function getStandardPayload() {
   };
 }
 
+function identify(userId: string, data?: IdentityData) {
+  if (!isBrowser || !initialized || !config) return;
+  if (config?.trackingEnabled === false) return;
+
+  async function send() {
+    try {
+      await fetch(`${config?.endpoint}/identify`, {
+        method: 'POST',
+        body: JSON.stringify({
+          userId,
+          data,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch {}
+  }
+
+  send();
+}
+
 function track(event?: string, data?: EventData) {
   if (!isBrowser || !initialized) return;
   if (config?.trackingEnabled === false) return;
-  return send({
+  return sendEvent({
     ...getStandardPayload(),
     name: event ?? 'pageview',
     data: data,
   });
 }
 
-async function send(payload: any) {
+async function sendEvent(payload: any) {
   if (!initialized || !config) return;
   if (!config.trackingEnabled && payload.name !== 'pageview') {
     console.error('Toolbird: Tracking is disabled');
     return;
   }
   try {
-    await fetch(config.endpoint, {
+    await fetch(`${config.endpoint}/event`, {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {
@@ -106,7 +137,7 @@ function init(options: ToolbirdOptions) {
     : [];
 
   const trackingEnabled = domains.includes(hostname);
-  const endpoint = options.host ?? 'https://api.toolbird.io/v1/event';
+  const endpoint = options.host ?? 'https://api.toolbird.io/v1';
   const excludeQuery = options.excludeQuery ?? false;
   const autoTrack = options.autoTrack ?? true;
 
@@ -167,6 +198,7 @@ function setTrackingEnabled(enabled: boolean) {
 const toolbird: ToolbirdClient = {
   init: init,
   track: track,
+  identify: identify,
   pageview: () => track('pageview'),
   setTrackingEnabled: setTrackingEnabled,
 };
