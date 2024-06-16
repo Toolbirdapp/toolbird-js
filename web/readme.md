@@ -43,5 +43,29 @@ API
 
 EventData is a object of keys with values of `string`, `number`, `boolean` or `Date`
 
+### `identify(userId: string, data: IdentityData)`
+
+IdentityData is a object of keys with values of `string`, `number`, `boolean` or `Date`,
+there are 3 reserved keys that can only be `string`, those are `email`, `name` & `avatar`
+
+It is recommeded to add `email`, `name` and `avatar` to get the most out of user profiles.
+
+### Example
+
+```js
+
+const user = {
+    id: "dcedab1d-1d61-407c-a2e8-5a3bcd6a9656",
+    email: 'johnsmith@gmail.com',
+    firstName: "John",
+    avatarURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/1200px-Default_pfp.svg.png"
+}
+
+toolbird.identify(user.id, {
+    email: user.email,
+    name: user.firstName,
+    avatar: user.avatarURL
+})
+```
 
 If you have questions, contact me at simon@toolbird.io
